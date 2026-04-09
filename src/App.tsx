@@ -80,35 +80,61 @@ function App() {
   ]
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 min-h-screen">
-      <div className="glass p-8 rounded-[3rem] shadow-2xl w-full max-w-[420px] border border-white/10 ring-1 ring-white/5">
-        {/* Display */}
-        <div className="mb-8 px-6 py-10 text-right overflow-hidden rounded-[2rem] bg-black/20 border border-white/5">
-          <div className="text-slate-500 text-lg h-8 transition-all duration-300">
-            {previousValue} {operator}
-          </div>
-          <div className="text-7xl font-light tracking-tighter text-white truncate transition-all duration-300">
-            {display}
-          </div>
-        </div>
+    <div className="flex items-center justify-center min-h-screen bg-[#020617]">
 
-        {/* Keypad */}
-        <div className="grid grid-cols-4 gap-4">
-          {buttons.map((btn, idx) => (
-            <button
-              key={idx}
-              onClick={btn.action}
-              className={`
-                h-20 rounded-2xl text-2xl font-medium transition-all duration-200 active:scale-95
-                ${btn.wide ? 'col-span-2' : ''}
-                ${btn.type === 'number' ? 'bg-white/5 hover:bg-white/10 text-white' : ''}
-                ${btn.type === 'operator' ? 'bg-sky-500 hover:bg-sky-400 text-white shadow-lg shadow-sky-500/20' : ''}
-                ${btn.type === 'special' ? 'bg-slate-700/50 hover:bg-slate-700/70 text-sky-400' : ''}
+      {/* Outer glow */}
+      <div className="relative">
+        <div className="absolute inset-0 blur-3xl bg-sky-500/20 rounded-[3rem]" />
+
+        {/* Calculator */}
+        <div className="relative w-[260px] rounded-[3rem] p-5 bg-gradient-to-b from-[#1e293b]/80 to-[#020617]/90 backdrop-blur-2xl border border-white/10 shadow-2xl">
+
+          {/* Display */}
+          <div className="mb-6 p-4 rounded-[1.5rem] bg-white/5 border border-white/10 text-center">
+            <div className="text-slate-400 text-sm h-5">
+              {previousValue} {operator}
+            </div>
+            <div className="text-white text-5xl font-light tracking-tight mt-1">
+              <div className="truncate">
+                {display}
+              </div>
+
+            </div>
+          </div>
+
+          {/* Keypad */}
+          <div className="grid grid-cols-4 gap-3">
+            {buttons.map((btn, idx) => (
+              <button
+                key={idx}
+                onClick={btn.action}
+                className={`
+                flex items-center justify-center
+                h-14 rounded-xl text-lg font-medium
+                transition-all duration-150 active:scale-95
+
+                ${btn.wide ? 'col-span-2 justify-start pl-5' : ''}
+
+                ${btn.type === 'number'
+                    ? 'bg-white/5 text-white border border-white/10 hover:bg-white/10'
+                    : ''
+                  }
+
+                ${btn.type === 'operator'
+                    ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30'
+                    : ''
+                  }
+
+                ${btn.type === 'special'
+                    ? 'bg-white/10 text-sky-300'
+                    : ''
+                  }
               `}
-            >
-              {btn.label}
-            </button>
-          ))}
+              >
+                {btn.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
