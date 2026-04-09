@@ -80,26 +80,26 @@ function App() {
   ]
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <div className="glass p-6 rounded-[2.5rem] shadow-2xl w-full max-w-[340px] border border-white/10 ring-1 ring-white/5">
+    <div className="flex flex-col items-center justify-center p-4 min-h-screen">
+      <div className="glass p-8 rounded-[3rem] shadow-2xl w-full max-w-[420px] border border-white/10 ring-1 ring-white/5">
         {/* Display */}
-        <div className="mb-6 px-4 py-8 text-right overflow-hidden rounded-2xl bg-black/20 border border-white/5">
-          <div className="text-slate-500 text-sm h-6 transition-all duration-300">
+        <div className="mb-8 px-6 py-10 text-right overflow-hidden rounded-[2rem] bg-black/20 border border-white/5">
+          <div className="text-slate-500 text-lg h-8 transition-all duration-300">
             {previousValue} {operator}
           </div>
-          <div className="text-5xl font-light tracking-tighter text-white truncate transition-all duration-300">
+          <div className="text-7xl font-light tracking-tighter text-white truncate transition-all duration-300">
             {display}
           </div>
         </div>
 
         {/* Keypad */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 gap-4">
           {buttons.map((btn, idx) => (
             <button
               key={idx}
               onClick={btn.action}
               className={`
-                h-16 rounded-2xl text-xl font-medium transition-all duration-200 active:scale-95
+                h-20 rounded-2xl text-2xl font-medium transition-all duration-200 active:scale-95
                 ${btn.wide ? 'col-span-2' : ''}
                 ${btn.type === 'number' ? 'bg-white/5 hover:bg-white/10 text-white' : ''}
                 ${btn.type === 'operator' ? 'bg-sky-500 hover:bg-sky-400 text-white shadow-lg shadow-sky-500/20' : ''}
