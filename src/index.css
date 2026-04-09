@@ -1,6 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-calc-bg: #0f172a;
+  --color-calc-surface: #1e293b;
+  --color-calc-accent: #38bdf8;
+  --color-calc-text: #f1f5f9;
+}
 
 @layer base {
   body {
