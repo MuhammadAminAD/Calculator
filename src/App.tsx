@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import './App.css'
 
 function App() {
@@ -6,17 +6,17 @@ function App() {
   const [previousValue, setPreviousValue] = useState<string | null>(null)
   const [operator, setOperator] = useState<string | null>(null)
 
-  const handleNumber = (num: string) => {
+  const handleNumber = useCallback((num: string) => {
     setDisplay(prev => prev === '0' ? num : prev + num)
-  }
+  }, [])
 
-  const handleOperator = (op: string) => {
+  const handleOperator = useCallback((op: string) => {
     setOperator(op)
     setPreviousValue(display)
     setDisplay('0')
-  }
+  }, [display])
 
-  const calculate = () => {
+  const calculate = useCallback(() => {
     if (!previousValue || !operator) return
     const prev = parseFloat(previousValue)
     const current = parseFloat(display)
@@ -26,19 +26,36 @@ function App() {
       case '+': result = prev + current; break
       case '-': result = prev - current; break
       case '*': result = prev * current; break
-      case '/': result = prev / current; break
+      case '/': result = current !== 0 ? prev / current : 0; break
     }
 
     setDisplay(String(result))
     setPreviousValue(null)
     setOperator(null)
-  }
+  }, [display, previousValue, operator])
 
-  const clear = () => {
+  const clear = useCallback(() => {
     setDisplay('0')
     setPreviousValue(null)
     setOperator(null)
-  }
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key >= '0' && e.key <= '9') handleNumber(e.key)
+      if (e.key === '.') handleNumber('.')
+      if (e.key === '+') handleOperator('+')
+      if (e.key === '-') handleOperator('-')
+      if (e.key === '*') handleOperator('*')
+      if (e.key === '/') handleOperator('/')
+      if (e.key === 'Enter' || e.key === '=') calculate()
+      if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') clear()
+      if (e.key === 'Backspace') setDisplay(prev => prev.length > 1 ? prev.slice(0, -1) : '0')
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleNumber, handleOperator, calculate, clear])
 
   const buttons = [
     { label: 'C', action: clear, type: 'special' },
@@ -64,13 +81,6 @@ function App() {
 
   return (
     <div className="flex flex-col items-center justify-center p-4">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text text-transparent">
-          SmartCalc Pro
-        </h1>
-        <p className="text-slate-400 mt-2">Professional UI by Antigravity</p>
-      </div>
-
       <div className="glass p-6 rounded-[2.5rem] shadow-2xl w-full max-w-[340px] border border-white/10 ring-1 ring-white/5">
         {/* Display */}
         <div className="mb-6 px-4 py-8 text-right overflow-hidden rounded-2xl bg-black/20 border border-white/5">
@@ -101,16 +111,10 @@ function App() {
           ))}
         </div>
       </div>
-
-      <div className="mt-12 flex gap-4 text-xs text-slate-500 uppercase tracking-widest font-semibold">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
-          Connected to Backend
-        </div>
-        <div>v1.0.0</div>
-      </div>
     </div>
   )
 }
+
+export default App
 
 export default App
