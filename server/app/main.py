@@ -16,21 +16,49 @@ from app.schemas import (
 APP_VERSION = "1.0.0"
 
 SUPPORTED_FUNCTIONS = [
-    FunctionInfo(name="sin", syntax="sin(x)", description="Sine. Respects degree/radian mode."),
-    FunctionInfo(name="cos", syntax="cos(x)", description="Cosine. Respects degree/radian mode."),
-    FunctionInfo(name="tan", syntax="tan(x)", description="Tangent. Respects degree/radian mode."),
-    FunctionInfo(name="asin", syntax="asin(x)", description="Inverse sine. Returns the current angle mode."),
-    FunctionInfo(name="acos", syntax="acos(x)", description="Inverse cosine. Returns the current angle mode."),
-    FunctionInfo(name="atan", syntax="atan(x)", description="Inverse tangent. Returns the current angle mode."),
+    FunctionInfo(
+        name="sin", syntax="sin(x)", description="Sine. Respects degree/radian mode."
+    ),
+    FunctionInfo(
+        name="cos", syntax="cos(x)", description="Cosine. Respects degree/radian mode."
+    ),
+    FunctionInfo(
+        name="tan", syntax="tan(x)", description="Tangent. Respects degree/radian mode."
+    ),
+    FunctionInfo(
+        name="asin",
+        syntax="asin(x)",
+        description="Inverse sine. Returns the current angle mode.",
+    ),
+    FunctionInfo(
+        name="acos",
+        syntax="acos(x)",
+        description="Inverse cosine. Returns the current angle mode.",
+    ),
+    FunctionInfo(
+        name="atan",
+        syntax="atan(x)",
+        description="Inverse tangent. Returns the current angle mode.",
+    ),
     FunctionInfo(name="sqrt", syntax="sqrt(x)", description="Square root."),
     FunctionInfo(name="ln", syntax="ln(x)", description="Natural logarithm."),
-    FunctionInfo(name="log", syntax="log(x) or log(x, base)", description="Base-10 log or custom-base log."),
-    FunctionInfo(name="exp", syntax="exp(x)", description="e raised to the given power."),
-    FunctionInfo(name="fact", syntax="fact(n)", description="Factorial for whole numbers."),
+    FunctionInfo(
+        name="log",
+        syntax="log(x) or log(x, base)",
+        description="Base-10 log or custom-base log.",
+    ),
+    FunctionInfo(
+        name="exp", syntax="exp(x)", description="e raised to the given power."
+    ),
+    FunctionInfo(
+        name="fact", syntax="fact(n)", description="Factorial for whole numbers."
+    ),
     FunctionInfo(name="abs", syntax="abs(x)", description="Absolute value."),
     FunctionInfo(name="floor", syntax="floor(x)", description="Round down."),
     FunctionInfo(name="ceil", syntax="ceil(x)", description="Round up."),
-    FunctionInfo(name="round", syntax="round(x) or round(x, n)", description="Rounded result."),
+    FunctionInfo(
+        name="round", syntax="round(x) or round(x, n)", description="Rounded result."
+    ),
 ]
 
 app = FastAPI(
@@ -48,7 +76,10 @@ app = FastAPI(
     },
     openapi_tags=[
         {"name": "Meta", "description": "Service metadata and health endpoints."},
-        {"name": "Calculator", "description": "Scientific calculator evaluation endpoints."},
+        {
+            "name": "Calculator",
+            "description": "Scientific calculator evaluation endpoints.",
+        },
     ],
 )
 
@@ -62,7 +93,9 @@ app.add_middleware(
 
 
 @app.exception_handler(CalculatorError)
-async def calculator_exception_handler(_: object, error: CalculatorError) -> JSONResponse:
+async def calculator_exception_handler(
+    _: object, error: CalculatorError
+) -> JSONResponse:
     return JSONResponse(status_code=400, content={"detail": str(error)})
 
 
@@ -84,7 +117,9 @@ def root() -> dict[str, str]:
     summary="Health check",
 )
 def healthcheck() -> HealthResponse:
-    return HealthResponse(status="ok", service="Scientific Calculator API", version=APP_VERSION)
+    return HealthResponse(
+        status="ok", service="Scientific Calculator API", version=APP_VERSION
+    )
 
 
 @app.get(
