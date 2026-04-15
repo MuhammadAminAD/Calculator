@@ -1,0 +1,21 @@
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    environment:
+      DB_NAME: calculator
+      DB_USERNAME: calculator
+      DB_PASSWORD: calculator
+      DB_HOST: db
+      DB_PORT: "5432"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: calculator
+      POSTGRES_USER: calculator
+      POSTGRES_PASSWORD: calculator
