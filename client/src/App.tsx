@@ -364,10 +364,7 @@ function App() {
                   ref={expressionInputRef}
                   type="text"
                   value={expression}
-                  onChange={(event) => {
-                    setExpression(event.target.value)
-                    setCalcError(null)
-                  }}
+                  readOnly
                   placeholder="sin(90)+sqrt(16)"
                   className="expression-input"
                   autoComplete="off"
