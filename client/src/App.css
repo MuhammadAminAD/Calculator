@@ -1,138 +1,487 @@
-/* Общий контейнер (если хочешь доп. контроль) */
+/* ═══════════════════════════════════════════════
+   Scientific Calculator — Premium Glassmorphism
+   ═══════════════════════════════════════════════ */
+
+/* Container */
 .app-container {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  padding: 1rem;
 }
 
-/* Glass карточка */
-.calculator {
-  width: 100%;
-  max-width: 420px;
-  padding: 2rem;
-  border-radius: 3rem;
+/* Wrapper for glow + calc */
+.calculator-wrapper {
+  position: relative;
+}
 
-  background: rgba(255, 255, 255, 0.05);
+.glow-effect {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(ellipse at center,
+      rgba(56, 189, 248, 0.15) 0%,
+      transparent 70%);
+  border-radius: 3.5rem;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glass card */
+.calculator {
+  position: relative;
+  z-index: 1;
+  width: 320px;
+  padding: 1.25rem;
+  border-radius: 2.5rem;
+  background: linear-gradient(165deg,
+      rgba(30, 41, 59, 0.85) 0%,
+      rgba(2, 6, 23, 0.95) 100%);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.6),
-    inset 0 1px 1px rgba(255, 255, 255, 0.05);
-}
-
-/* Дисплей */
-.display {
-  margin-bottom: 2rem;
-  padding: 2rem;
-  border-radius: 2rem;
-  text-align: right;
-
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.08),
-    rgba(255, 255, 255, 0.02)
-  );
-
   border: 1px solid rgba(255, 255, 255, 0.08);
-
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px rgba(255, 255, 255, 0.04);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.display-previous {
-  color: #94a3b8;
-  font-size: 1rem;
-  height: 1.5rem;
-  margin-bottom: 0.5rem;
+.calculator-scientific {
+  width: 360px;
 }
 
-.display-current {
-  color: white;
-  font-size: 3.5rem;
-  font-weight: 300;
-  letter-spacing: -1px;
-  word-break: break-all;
-}
-
-/* Сетка кнопок */
-.keypad {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-}
-
-/* Базовая кнопка */
-.btn {
-  height: 5rem;
-  border-radius: 1.25rem;
-  font-size: 1.5rem;
-  font-weight: 500;
-
+/* ── Top Bar ── */
+.top-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding: 0 0.25rem;
+}
 
-  transition: all 0.15s ease;
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   cursor: pointer;
+  transition: all 0.2s;
+}
 
-  backdrop-filter: blur(10px);
+.mode-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mode-toggle.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+}
+
+.mode-icon {
+  font-size: 0.85rem;
+}
+
+.mode-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+
+.angle-toggle {
+  display: flex;
+  border-radius: 0.5rem;
+  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Нажатие */
-.btn:active {
+.angle-btn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.04);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.angle-btn:first-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.angle-btn.active {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+
+.angle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.history-btn {
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.history-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.history-btn.active {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+/* ── Display ── */
+.display {
+  margin-bottom: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1.5rem;
+  text-align: right;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.display-expression {
+  color: #64748b;
+  font-size: 0.85rem;
+  min-height: 1.25rem;
+  margin-bottom: 0.25rem;
+  word-break: break-all;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.display-result {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 300;
+  letter-spacing: -1px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.display-result::-webkit-scrollbar {
+  display: none;
+}
+
+.display-error {
+  color: #f87171;
+  font-size: 0.9rem;
+  font-weight: 500;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.display-loading {
+  color: #38bdf8;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ── History Panel ── */
+.history-panel {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.history-clear {
+  color: #f87171;
+  font-size: 0.65rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+  transition: background 0.2s;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.history-clear:hover {
+  background: rgba(248, 113, 113, 0.15);
+}
+
+.history-empty {
+  text-align: center;
+  color: #475569;
+  font-size: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.history-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: right;
+}
+
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.history-expr {
+  color: #64748b;
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.history-res {
+  color: #38bdf8;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* ── Scientific Panel ── */
+.scientific-panel {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+  padding: 0.6rem;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ── Backspace Row ── */
+.backspace-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.4rem;
+}
+
+.btn-backspace {
+  padding: 0.4rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.15);
+  color: #f87171;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-backspace:hover {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+.btn-backspace:active {
   transform: scale(0.95);
 }
 
-/* Цифры */
+/* ── Keypad ── */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+/* ── Base Button ── */
+.btn {
+  height: 3.5rem;
+  border-radius: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  user-select: none;
+}
+
+.btn:active {
+  transform: scale(0.93);
+}
+
+/* Number buttons */
 .btn-number {
   background: rgba(255, 255, 255, 0.05);
   color: white;
-
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.03);
 }
 
 .btn-number:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Операторы (синие) */
+/* Operator buttons */
 .btn-operator {
   background: linear-gradient(135deg, #38bdf8, #0ea5e9);
   color: white;
-
+  border-color: rgba(56, 189, 248, 0.3);
   box-shadow:
-    0 10px 25px rgba(56, 189, 248, 0.35),
-    0 0 15px rgba(56, 189, 248, 0.4);
+    0 6px 20px rgba(56, 189, 248, 0.3),
+    0 0 10px rgba(56, 189, 248, 0.2);
 }
 
 .btn-operator:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.15);
+  box-shadow:
+    0 8px 25px rgba(56, 189, 248, 0.4),
+    0 0 15px rgba(56, 189, 248, 0.3);
 }
 
-/* Спец кнопки */
+/* Special buttons (C, parens) */
 .btn-special {
   background: rgba(255, 255, 255, 0.08);
   color: #7dd3fc;
 }
 
 .btn-special:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.14);
 }
 
-/* Кнопка 0 (широкая) */
+/* Wide button (0) */
 .btn-wide {
   grid-column: span 2;
   justify-content: flex-start;
   padding-left: 1.5rem;
 }
 
-/* Glow эффект снизу */
-.btn-operator:last-child {
-  box-shadow:
-    0 0 20px rgba(56, 189, 248, 0.6),
-    0 0 40px rgba(56, 189, 248, 0.3);
+/* ── Scientific Buttons ── */
+.btn-func {
+  height: 2.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: rgba(139, 92, 246, 0.12);
+  color: #a78bfa;
+  border-color: rgba(139, 92, 246, 0.15);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.btn-func:hover {
+  background: rgba(139, 92, 246, 0.22);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+/* Constant buttons */
+.btn-const {
+  height: 2.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.15);
+}
+
+.btn-const:hover {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+/* ── Responsive ── */
+@media (max-width: 400px) {
+  .calculator {
+    width: 100%;
+    max-width: 320px;
+    padding: 1rem;
+    border-radius: 2rem;
+  }
+
+  .calculator-scientific {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .btn {
+    height: 3rem;
+    font-size: 1.1rem;
+    border-radius: 0.85rem;
+  }
+
+  .btn-func,
+  .btn-const {
+    height: 2.5rem;
+    font-size: 0.7rem;
+  }
+
+  .display-result {
+    font-size: 2rem;
+  }
+}
+
+/* ── Scrollbar styling ── */
+.history-panel::-webkit-scrollbar {
+  width: 3px;
+}
+
+.history-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
