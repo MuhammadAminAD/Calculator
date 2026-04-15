@@ -38,7 +38,6 @@ function App() {
   const backspace = useCallback(() => {
     setError(null)
     setExpression(prev => {
-      // Try to remove function names as a unit
       const funcMatch = prev.match(/(sin|cos|tan|asin|acos|atan|sqrt|ln|log|exp|fact|abs|floor|ceil|round)\($/)
       if (funcMatch) {
         const next = prev.slice(0, -(funcMatch[1].length + 1))
@@ -79,7 +78,6 @@ function App() {
     appendToExpression(c)
   }, [appendToExpression])
 
-  // Keyboard support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key >= '0' && e.key <= '9') appendToExpression(e.key)
@@ -94,12 +92,38 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [appendToExpression, evaluate, clearAll, backspace])
 
-  // Auto-scroll display
   useEffect(() => {
-    if (displayRef.current) {
-      displayRef.current.scrollLeft = displayRef.current.scrollWidth
-    }
+    if (displayRef.current) displayRef.current.scrollLeft = displayRef.current.scrollWidth
   }, [display])
+
+  const scientificRow1 = [
+    { label: 'sin', action: () => insertFunction('sin') },
+    { label: 'cos', action: () => insertFunction('cos') },
+    { label: 'tan', action: () => insertFunction('tan') },
+    { label: 'π', action: () => insertConstant('pi'), isConst: true },
+    { label: 'ln', action: () => insertFunction('ln') },
+  ]
+  const scientificRow2 = [
+    { label: 'sin⁻¹', action: () => insertFunction('asin') },
+    { label: 'cos⁻¹', action: () => insertFunction('acos') },
+    { label: 'tan⁻¹', action: () => insertFunction('atan') },
+    { label: 'e', action: () => insertConstant('e'), isConst: true },
+    { label: 'log', action: () => insertFunction('log') },
+  ]
+  const scientificRow3 = [
+    { label: '√x', action: () => insertFunction('sqrt') },
+    { label: 'xⁿ', action: () => appendToExpression('^') },
+    { label: 'n!', action: () => insertFunction('fact') },
+    { label: 'τ', action: () => insertConstant('tau'), isConst: true },
+    { label: 'exp', action: () => insertFunction('exp') },
+  ]
+  const scientificRow4 = [
+    { label: '|x|', action: () => insertFunction('abs') },
+    { label: '⌊x⌋', action: () => insertFunction('floor') },
+    { label: '⌈x⌉', action: () => insertFunction('ceil') },
+    { label: '≈', action: () => insertFunction('round') },
+    { label: '%', action: () => appendToExpression('%') },
+  ]
 
   const basicButtons = [
     { label: 'C', action: clearAll, type: 'special' },
@@ -120,148 +144,130 @@ function App() {
     { label: '+', action: () => appendToExpression('+'), type: 'operator' },
     { label: '0', action: () => appendToExpression('0'), type: 'number', wide: true },
     { label: '.', action: () => appendToExpression('.'), type: 'number' },
-    { label: '=', action: evaluate, type: 'operator' },
+    { label: '=', action: evaluate, type: 'equals' },
   ]
 
-  const scientificButtons = [
-    { label: 'sin', action: () => insertFunction('sin'), type: 'func' },
-    { label: 'cos', action: () => insertFunction('cos'), type: 'func' },
-    { label: 'tan', action: () => insertFunction('tan'), type: 'func' },
-    { label: 'π', action: () => insertConstant('pi'), type: 'const' },
-    { label: 'asin', action: () => insertFunction('asin'), type: 'func' },
-    { label: 'acos', action: () => insertFunction('acos'), type: 'func' },
-    { label: 'atan', action: () => insertFunction('atan'), type: 'func' },
-    { label: 'e', action: () => insertConstant('e'), type: 'const' },
-    { label: '√', action: () => insertFunction('sqrt'), type: 'func' },
-    { label: 'ln', action: () => insertFunction('ln'), type: 'func' },
-    { label: 'log', action: () => insertFunction('log'), type: 'func' },
-    { label: 'τ', action: () => insertConstant('tau'), type: 'const' },
-    { label: 'xⁿ', action: () => appendToExpression('^'), type: 'func' },
-    { label: 'n!', action: () => insertFunction('fact'), type: 'func' },
-    { label: 'exp', action: () => insertFunction('exp'), type: 'func' },
-    { label: '%', action: () => appendToExpression('%'), type: 'func' },
-    { label: '|x|', action: () => insertFunction('abs'), type: 'func' },
-    { label: '⌊x⌋', action: () => insertFunction('floor'), type: 'func' },
-    { label: '⌈x⌉', action: () => insertFunction('ceil'), type: 'func' },
-    { label: '≈', action: () => insertFunction('round'), type: 'func' },
-  ]
+  const sciRows = [scientificRow1, scientificRow2, scientificRow3, scientificRow4]
 
   return (
-    <div className="app-container">
-      {/* Outer glow */}
-      <div className="calculator-wrapper">
-        <div className="glow-effect" />
+    <div className="app-root">
+      {/* Ambient background */}
+      <div className="ambient-bg" />
+      <div className="grid-bg" />
 
-        <div className={`calculator ${isScientific ? 'calculator-scientific' : ''}`}>
-          {/* Top bar */}
-          <div className="top-bar">
-            <button
-              className={`mode-toggle ${isScientific ? 'active' : ''}`}
-              onClick={() => setIsScientific(prev => !prev)}
-              title="Toggle scientific mode"
-            >
-              <span className="mode-icon">{isScientific ? '🔬' : '🔢'}</span>
-              <span className="mode-label">{isScientific ? 'SCI' : 'STD'}</span>
-            </button>
+      <div className="calc-shell">
+        {/* Status bar */}
+        <div className="status-bar">
+          <div className="status-left">
+            <div className="status-dot green" />
+            <span className="status-label">CONNECTED</span>
+          </div>
+          <span className="status-version">v2.0 SCI</span>
+        </div>
 
-            <div className="angle-toggle">
-              <button
-                className={`angle-btn ${angleMode === 'degree' ? 'active' : ''}`}
-                onClick={() => setAngleMode('degree')}
-              >
-                DEG
-              </button>
-              <button
-                className={`angle-btn ${angleMode === 'radian' ? 'active' : ''}`}
-                onClick={() => setAngleMode('radian')}
-              >
-                RAD
-              </button>
-            </div>
+        {/* Control strip */}
+        <div className="control-strip">
+          <button
+            className={`ctrl-chip ${isScientific ? 'ctrl-active' : ''}`}
+            onClick={() => setIsScientific(prev => !prev)}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+            {isScientific ? 'SCIENTIFIC' : 'STANDARD'}
+          </button>
 
-            <button
-              className={`history-btn ${showHistory ? 'active' : ''}`}
-              onClick={() => setShowHistory(prev => !prev)}
-              title="History"
-            >
-              🕐
-            </button>
+          <div className="ctrl-divider" />
+
+          <div className="angle-switch">
+            <button className={`angle-opt ${angleMode === 'degree' ? 'angle-active' : ''}`} onClick={() => setAngleMode('degree')}>DEG</button>
+            <button className={`angle-opt ${angleMode === 'radian' ? 'angle-active' : ''}`} onClick={() => setAngleMode('radian')}>RAD</button>
           </div>
 
-          {/* Display */}
-          <div className="display">
-            <div className="display-expression">
-              {expression || '\u00A0'}
-            </div>
-            <div className={`display-result ${error ? 'display-error' : ''} ${loading ? 'display-loading' : ''}`} ref={displayRef}>
-              {loading ? '...' : error ? error : display}
-            </div>
-          </div>
+          <div className="ctrl-divider" />
 
-          {/* History panel */}
-          {showHistory && (
-            <div className="history-panel">
-              <div className="history-header">
-                <span>History</span>
-                <button className="history-clear" onClick={() => setHistory([])}>Clear</button>
+          <button className={`ctrl-chip ${showHistory ? 'ctrl-active' : ''}`} onClick={() => setShowHistory(prev => !prev)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+            </svg>
+            LOG
+          </button>
+        </div>
+
+        {/* Display */}
+        <div className="screen">
+          <div className="screen-expr">{expression || '\u00A0'}</div>
+          <div className={`screen-result ${error ? 'screen-error' : ''} ${loading ? 'screen-loading' : ''}`} ref={displayRef}>
+            {loading ? (
+              <span className="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+            ) : error ? error : display}
+          </div>
+        </div>
+
+        {/* History */}
+        {showHistory && (
+          <div className="log-panel">
+            <div className="log-header">
+              <span>COMPUTATION LOG</span>
+              <button className="log-clear" onClick={() => setHistory([])}>FLUSH</button>
+            </div>
+            {history.length === 0 ? (
+              <div className="log-empty">— empty —</div>
+            ) : (
+              <div className="log-list">
+                {history.map((entry, i) => (
+                  <button key={i} className="log-item" onClick={() => { setExpression(entry.result); setDisplay(entry.result); setShowHistory(false) }}>
+                    <span className="log-expr">{entry.expression}</span>
+                    <span className="log-res">→ {entry.result}</span>
+                  </button>
+                ))}
               </div>
-              {history.length === 0 ? (
-                <div className="history-empty">No calculations yet</div>
-              ) : (
-                <div className="history-list">
-                  {history.map((entry, i) => (
-                    <button
-                      key={i}
-                      className="history-item"
-                      onClick={() => {
-                        setExpression(entry.result)
-                        setDisplay(entry.result)
-                        setShowHistory(false)
-                      }}
-                    >
-                      <span className="history-expr">{entry.expression}</span>
-                      <span className="history-res">= {entry.result}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Scientific panel */}
-          {isScientific && (
-            <div className="scientific-panel">
-              {scientificButtons.map((btn, idx) => (
-                <button
-                  key={idx}
-                  onClick={btn.action}
-                  className={`btn btn-${btn.type}`}
-                >
-                  {btn.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Backspace row */}
-          <div className="backspace-row">
-            <button className="btn btn-backspace" onClick={backspace}>
-              ⌫
-            </button>
+            )}
           </div>
+        )}
 
-          {/* Basic keypad */}
-          <div className="keypad">
-            {basicButtons.map((btn, idx) => (
-              <button
-                key={idx}
-                onClick={btn.action}
-                className={`btn btn-${btn.type} ${btn.wide ? 'btn-wide' : ''}`}
-              >
-                {btn.label}
-              </button>
+        {/* Scientific panel — compact horizontal 5-col grid, NO scroll */}
+        {isScientific && (
+          <div className="sci-grid">
+            {sciRows.map((row, ri) => (
+              <div className="sci-row" key={ri}>
+                {row.map((btn, ci) => (
+                  <button key={ci} className={`sci-btn ${btn.isConst ? 'sci-const' : ''}`} onClick={btn.action}>
+                    {btn.label}
+                  </button>
+                ))}
+              </div>
             ))}
           </div>
+        )}
+
+        {/* Backspace */}
+        <div className="del-row">
+          <button className="del-btn" onClick={backspace}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" /><line x1="18" y1="9" x2="12" y2="15" /><line x1="12" y1="9" x2="18" y2="15" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Keypad */}
+        <div className="pad">
+          {basicButtons.map((btn, idx) => (
+            <button
+              key={idx}
+              onClick={btn.action}
+              className={`key key-${btn.type} ${btn.wide ? 'key-wide' : ''}`}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="calc-footer">
+          <span>POWERED BY API</span>
+          <span>•</span>
+          <span>{angleMode.toUpperCase()}</span>
         </div>
       </div>
     </div>
