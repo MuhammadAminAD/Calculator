@@ -52,6 +52,49 @@ class CalculationResponse(BaseModel):
     formatted_result: str = Field(..., description="UI-friendly result string with the requested precision.")
 
 
+class PhotoMathAnalysis(BaseModel):
+    can_solve: bool = Field(
+        ...,
+        description="Whether the model could confidently read and solve the visible math problem.",
+    )
+    detected_problem: str = Field(
+        ...,
+        description="Math problem transcribed from the uploaded image.",
+    )
+    answer: str = Field(..., description="Final answer for the detected problem.")
+    steps: list[str] = Field(
+        default_factory=list,
+        description="Short, ordered explanation of how the answer was obtained.",
+    )
+    confidence_note: str = Field(
+        ...,
+        description="Caveats or assumptions the model made while reading the image.",
+    )
+
+
+class PhotoMathResponse(BaseModel):
+    filename: str = Field(..., description="Original uploaded file name.")
+    media_type: str = Field(..., description="Detected MIME type for the uploaded image.")
+    model: str = Field(..., description="Grok model used to analyze the image.")
+    can_solve: bool = Field(
+        ...,
+        description="Whether Grok could confidently read and solve the visible math problem.",
+    )
+    detected_problem: str = Field(
+        ...,
+        description="Math problem transcribed from the uploaded image.",
+    )
+    answer: str = Field(..., description="Final answer returned by Grok.")
+    steps: list[str] = Field(
+        default_factory=list,
+        description="Short, ordered explanation of the solution.",
+    )
+    confidence_note: str = Field(
+        ...,
+        description="Caveats or assumptions returned by Grok.",
+    )
+
+
 class HealthResponse(BaseModel):
     status: str
     service: str

@@ -1,23 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap");
 @import "tailwindcss";
-
-
-:root {
-  --calc-bg: #0f172a;
-  --calc-surface: #1e293b;
-  --calc-accent: #38bdf8;
-  --calc-text: #f1f5f9;
-}
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply min-h-screen;
+    margin: 0;
+    font-family: "Manrope", system-ui, sans-serif;
+    color: #0f172a;
   }
-}
 
-.glass {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  #root {
+    min-height: 100vh;
+  }
 }

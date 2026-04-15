@@ -5,6 +5,8 @@ from math import isclose
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.photo_math import GrokPhotoMathService
+from app.schemas import PhotoMathAnalysis
 
 client = TestClient(app)
 
@@ -56,3 +58,39 @@ def test_invalid_expression_returns_error() -> None:
 
     assert response.status_code == 400
     assert "undefined" in response.json()["detail"]
+
+
+def test_photo_math_upload_returns_structured_result(monkeypatch) -> None:
+    async def fake_solve_image(self, image_bytes: bytes, media_type: str):
+        assert image_bytes == b"fake-image"
+        assert media_type == "image/png"
+        return PhotoMathAnalysis(
+            can_solve=True,
+            detected_problem="12 + 8",
+            answer="20",
+            steps=["12 va 8 ni qo'shing.", "Natija 20 bo'ladi."],
+            confidence_note="Image was clear.",
+        )
+
+    monkeypatch.setattr(GrokPhotoMathService, "solve_image", fake_solve_image)
+
+    response = client.post(
+        "/api/v1/photo-math",
+        files={"image": ("math.png", b"fake-image", "image/png")},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["answer"] == "20"
+    assert payload["detected_problem"] == "12 + 8"
+    assert payload["filename"] == "math.png"
+
+
+def test_photo_math_validation_error() -> None:
+    response = client.post(
+        "/api/v1/photo-math",
+        files={"image": ("math.gif", b"fake-image", "image/gif")},
+    )
+
+    assert response.status_code == 400
+    assert "JPG and PNG" in response.json()["detail"]

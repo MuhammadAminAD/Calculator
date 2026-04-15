@@ -1,16 +1,18 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.calculator import CalculatorError, ScientificCalculator, format_result
+from app.photo_math import GrokPhotoMathService, PhotoMathError
 from app.schemas import (
     CalculationRequest,
     CalculationResponse,
     FunctionInfo,
     HealthResponse,
     MetaResponse,
+    PhotoMathResponse,
 )
 
 APP_VERSION = "1.0.0"
@@ -99,6 +101,11 @@ async def calculator_exception_handler(
     return JSONResponse(status_code=400, content={"detail": str(error)})
 
 
+@app.exception_handler(PhotoMathError)
+async def photo_math_exception_handler(_: object, error: PhotoMathError) -> JSONResponse:
+    return JSONResponse(status_code=error.status_code, content={"detail": str(error)})
+
+
 @app.get("/", tags=["Meta"], summary="Service entrypoint")
 def root() -> dict[str, str]:
     return {
@@ -107,6 +114,7 @@ def root() -> dict[str, str]:
         "docs": "/swagger",
         "health": "/api/v1/health",
         "calculate": "/api/v1/calculate",
+        "photo_math": "/api/v1/photo-math",
     }
 
 
@@ -159,4 +167,29 @@ def calculate(payload: CalculationRequest) -> CalculationResponse:
         angle_mode=payload.angle_mode,
         result=result,
         formatted_result=format_result(result, payload.precision),
+    )
+
+
+@app.post(
+    "/api/v1/photo-math",
+    response_model=PhotoMathResponse,
+    tags=["Calculator"],
+    summary="Solve a math problem from an uploaded image with Grok vision",
+)
+async def solve_photo_math(image: UploadFile = File(...)) -> PhotoMathResponse:
+    image_bytes = await image.read()
+    media_type = image.content_type or "application/octet-stream"
+
+    service = GrokPhotoMathService()
+    analysis = await service.solve_image(image_bytes=image_bytes, media_type=media_type)
+
+    return PhotoMathResponse(
+        filename=image.filename or "upload",
+        media_type=media_type,
+        model=service.model,
+        can_solve=analysis.can_solve,
+        detected_problem=analysis.detected_problem,
+        answer=analysis.answer,
+        steps=analysis.steps,
+        confidence_note=analysis.confidence_note,
     )

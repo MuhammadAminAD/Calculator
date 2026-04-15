@@ -5,6 +5,7 @@ certifi
 click 
 colorama 
 fastapi 
+groq 
 h11 
 httpcore 
 httptools 
@@ -17,6 +18,7 @@ pydantic
 pydantic_core 
 Pygments 
 pytest 
+python-multipart 
 python-dotenv 
 PyYAML 
 starlette 
